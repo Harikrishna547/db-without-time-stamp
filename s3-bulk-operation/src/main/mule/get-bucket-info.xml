@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+	<flow name="get-bucket-info" doc:id="3d43a9b2-3f05-405a-ab3f-87ab2402e3ef" >
+		<ee:transform doc:name="queryparams set as variables" doc:id="32add81b-e53f-44e4-910a-08b78e077d51" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="bucketName" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.bucketName]]></ee:set-variable>
+				<ee:set-variable variableName="GetBucketOperation" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.operation]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="440b7df9-b0c5-4306-bbcd-fa4c45cc54ea" message="#[vars.GetBucketAcl]"/>
+		<choice doc:name="Choice" doc:id="c059304d-766d-4ff9-8921-b117d4334f67" >
+			<when expression='#[vars.GetBucketOperation == "Get bucket acl"]'>
+				<try doc:name="Try" doc:id="bb75db85-3c79-4e4b-b3af-2211de045573" >
+					<s3:get-bucket-acl doc:name="Get bucket acl" doc:id="05faf6c3-4484-430b-9956-43c2d2ea55f1" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="efb93d88-ff8f-4a6a-84cb-8fe18503502e" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="aa653856-3d9e-4b54-9b33-9ff041145f5b" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="e570c440-3a65-4c56-bc25-a33f2656ae63" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket cors configuration"]'>
+				<try doc:name="Try" doc:id="3de20aed-94b4-4ab6-a965-2a8e2a62fffe" >
+					<s3:get-bucket-cors-configuration doc:name="Get bucket cors configuration" doc:id="b0352ff0-8b79-4317-80be-9f663d3ac0f0" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d8af573c-7454-42ee-8ecf-24b661da1bce" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="0c99da94-23dd-4ac6-8c29-171e4282755f" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="b0ab1378-27d0-47a7-a889-c7b261e2288a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket lifecycle configuration"]'>
+				<try doc:name="Try" doc:id="72fba084-252d-4dd3-8d04-a7e7a3e38450" >
+					<s3:get-bucket-lifecycle-configuration doc:name="Get bucket lifecycle configuration" doc:id="d213a466-864a-4649-b0f3-c60d0db20d80" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5cfa7ff2-9b68-4561-b399-1ec80b1633c5" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="384ecb08-689a-4c46-9edc-1afb14ae7c38" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="b179f214-662b-4a05-a382-8ac06adbec3b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket location"]'>
+				<try doc:name="Try" doc:id="ea03fddf-2a2b-458b-b3f3-88bf82a1d250" >
+					<s3:get-bucket-location doc:name="Get bucket location" doc:id="7a94e32e-d7e8-4b12-b53b-059097f49ac4" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3004c7ab-ba6a-4d71-adcf-56bd79aa199f" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="4da5b793-d8eb-4d32-80f6-e4f986a4f515" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="ee9b49ee-3c85-4d95-8eed-a00927cf4d07" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket logging configuration"]'>
+				<try doc:name="Try" doc:id="eebf022e-0472-4d1b-82b7-d27e74d2a503" >
+					<s3:get-bucket-logging-configuration doc:name="Get bucket logging configuration" doc:id="7e399095-e26e-4711-a299-1e67a33f428d" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1cb66c06-acba-4c32-bece-ec629d0ab290" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="e274479c-5c78-4016-8dd4-3a58c0e3cd8b" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="fa81f6bd-0902-43c2-a63b-630c6cd3b7e0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket notification configuration"]'>
+				<try doc:name="Try" doc:id="d6ab6d76-b0bd-4e1c-81ae-36cd3175c38e" >
+					<s3:get-bucket-notification-configuration doc:name="Get bucket notification configuration" doc:id="35319dfc-7a24-4179-a80c-27789a62b1f1" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7c8dd11b-14b0-4bff-95b1-815070626938" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="f1ea7b28-926c-4679-ba33-152dfd38a30c" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="36e9fdd0-90bb-4475-9963-b7427100296f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket policy"]'>
+				<try doc:name="Try" doc:id="1a71ab33-661c-43bc-b661-26c063bb1b11" >
+					<s3:get-bucket-policy doc:name="Get bucket policy" doc:id="9c6985fd-45d6-4f86-acbf-2ee88359b526" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e550da98-3623-4345-bb07-01855308c9fa" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="7b116407-2cd1-48be-a8fb-ad8e099c885f" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="b8138e93-d6db-4f12-8e8f-36f9bce2f9cd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket tagging configuration"]'>
+				<try doc:name="Try" doc:id="d77d71d1-95c7-47b5-ad80-64a664111a08" >
+					<s3:get-bucket-tagging-configuration doc:name="Get bucket tagging configuration" doc:id="32ce2e57-ecda-427d-9312-67d28f2a20a4" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="cb68b08d-45ad-411e-96dc-869491c67cb4" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="4b6e3d24-f6b8-4e3c-a119-13a64d2d1c75" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="588333af-98ca-4ef4-a761-090a500c2176" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket versioning configuration"]'>
+				<try doc:name="Try" doc:id="bc580533-dc26-47ef-805e-b400fc5824e9" >
+					<s3:get-bucket-versioning-configuration doc:name="Get bucket versioning configuration" doc:id="a7dcfcde-1bbb-49f2-884e-f8011fd9ca88" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7095a578-dd3c-4d36-8ad7-5464ae587e53" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="a530cfcc-e0f0-401b-adc1-0efeee46602d" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="bb9c8fc6-187b-4395-8c51-230e6d565b6f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.GetBucketOperation == "Get bucket website configuration"]'>
+				<try doc:name="Try" doc:id="744abd8f-e69f-4201-912c-1d360ff584f2" >
+					<s3:get-bucket-website-configuration doc:name="Get bucket website configuration" doc:id="66b056b2-108a-49f8-886a-5ff20324607e" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b41d69a7-5055-453f-b3b4-881afa9cece0" >
+							<flow-ref doc:name="bucket-not-exist-error" doc:id="dbe890b8-fc85-4fb2-a1d9-aae1482edee3" name="bucket-not-exist-error"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<ee:transform doc:name="final payload" doc:id="cdaeb7ca-1ea6-4eaf-ba1f-f6fe3aed7552" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="error message" doc:id="cccd7600-1ded-4404-ad6a-21698689a1c4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Please select get bucket operstion type"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="bucket-not-exist-error" doc:id="c6ed9329-a5d5-4525-a3c2-819ba0527c51" >
+		<ee:transform doc:name="error set as payload" doc:id="75d6d91c-f2f3-48f3-b778-aeb447fd9814" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorMessage: error.errorMessage ,
+	errorDiscription: error.description,
+	customMessage:" Bucket Is not Exist in AWS, Please create Bucket with this Name."
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

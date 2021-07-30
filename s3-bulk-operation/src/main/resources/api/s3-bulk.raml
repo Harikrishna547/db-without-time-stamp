@@ -1,0 +1,84 @@
+#%RAML 1.0
+title: S3-Bulk-Operations-API
+version: v1.0.0
+description: This is the API for performing All AWS-S3 operations.
+protocols:
+  - HTTP
+  - HTTPS
+/s3:
+  /create:
+    /bucket:
+      get:
+        queryParameters:
+          bucketName:
+            required: false
+            description: Create bucket with Name
+            type: string
+    /object:
+      get:
+       queryParameters:
+        bucketName:
+          required: false
+          description: Create Object with the help of Bucket Name
+          type: string
+        objectName:
+          required: false
+          description: Create Object with Name (must provide existing Bucket Name)
+          type: string
+  /getListBuckets:
+    get:
+      queryParameters:
+        region:
+          required: false
+          type: string
+  /getObjectInfo:
+    get:
+      queryParameters:
+        bucketName:
+          required: false
+          description:  bucket Name
+          type: string
+        objectName:
+          required: false
+          description: objetc Name
+          type: string
+        operationType:
+          required: false
+          type: string
+          default: Get object
+          enum: [Get object,Get object acl,Get object metadata]
+  /getBucketInfo:
+    get:
+      queryParameters:
+        bucketName:
+          required: false
+          description: get bucket with Name
+          type: string
+        operation:
+          required: false
+          type: string
+          default: Get bucket acl
+          enum: [Get bucket acl,Get bucket cors configuration,Get bucket lifecycle configuration,Get bucket location,Get bucket logging configuration,Get bucket notification configuration,Get bucket policy,Get bucket tagging configuration,Get bucket versioning configuration,Get bucket website configuration]
+  /delete:
+    /object:
+      delete:
+       queryParameters:
+        bucketName:
+          required: false
+          description: Create bucket with Name
+          type: string
+        objectName:
+          required: false
+          description: Create Object with Name
+          type: string
+    /bucket:
+      delete:
+       queryParameters:
+        bucketName:
+          required: false
+          description: Create bucket with Name
+          type: string
+          
+
+      
+    

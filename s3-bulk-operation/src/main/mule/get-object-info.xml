@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+	<flow name="get-object-info" doc:id="18bfca91-7094-43d5-a686-45b4777546a2" >
+		<ee:transform doc:name="Params set as payload" doc:id="6733e660-d946-4695-88da-9c14897aaae4" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="bucketName" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.bucketName]]></ee:set-variable>
+				<ee:set-variable variableName="operationType" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.operationType]]></ee:set-variable>
+				<ee:set-variable variableName="keyName" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.objectName]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="f4744fb9-9b4e-4ee3-aefe-5d764c48ae8a" >
+			<when expression='#[vars.operationType == "Get object"]'>
+				<try doc:name="Try" doc:id="c155095b-2e84-447a-93ab-54b74576d141" >
+					<s3:get-object doc:name="Get object" doc:id="035fbdef-368c-4c2b-a949-ad00de02cce8" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[vars.keyName]"/>
+					<ee:transform doc:name="success payload" doc:id="5fe1bcb9-00a0-46a8-8b7f-881595303bb3" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="56fa9e49-66c2-4387-ac06-bb5d5d4df06d" >
+							<ee:transform doc:name="Error" doc:id="a54133de-2ee3-4543-987c-5c143b28ca46" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorMessage: error.errorMessage,
+	errorDescription: error.description
+}]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</when>
+			<when expression='#[vars.operationType == "Get object acl"]'>
+				<try doc:name="Try" doc:id="6ac9a226-b0a8-4779-be69-2af988aec196" >
+					<s3:get-object-acl doc:name="Get object acl" doc:id="cdc656a6-a526-48fa-8544-759eaeda6ec6" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[vars.keyName]"/>
+					<ee:transform doc:name="Sucess Payload" doc:id="29e2f9b3-428e-4420-8ffe-109727ae3ed8">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a70ea981-3e3b-4381-bb17-d81a61057d69" >
+							<ee:transform doc:name="Error payload" doc:id="e3035db7-1676-4a32-8794-ff0d376d4d54" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorMessage: error.errorMessage,
+	errorDescription: error.description
+}]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</when>
+			<when expression='#[vars.operationType == "Get object metadata"]'>
+				<try doc:name="Try" doc:id="f07b8c75-fbd1-4e9c-be45-03b5759a1ac1" >
+					<s3:get-object-metadata doc:name="Get object metadata" doc:id="ada6809c-9e42-4c67-95c7-3075ecfcd364" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[vars.keyName]"/>
+					<ee:transform doc:name="Sucess Payload" doc:id="7e9a1cb5-052a-463a-86b3-3aae114cef41" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d8666dc3-daca-4a0c-88cf-4b37ab6b27ae" >
+							<ee:transform doc:name="Error payload" doc:id="9665417c-d8bf-4ed1-a9c0-3d1af9b7b78c" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorMessage: error.errorMessage,
+	errorDescription: error.description
+}]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Invalid Input" doc:id="2eeea264-17a0-402f-a413-57a507871409" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Invalid Input"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

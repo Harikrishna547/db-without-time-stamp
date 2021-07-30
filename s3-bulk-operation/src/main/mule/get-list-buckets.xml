@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+	<flow name="get-list-buckets" doc:id="2ed19c29-47fe-4b87-98ad-a3e9f51818a8" >
+		<ee:transform doc:name="region set as payload" doc:id="edc51b51-073a-4628-8fe0-f69d6e4a073d">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="region" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.region]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="cbbb7738-eb62-4c60-9a2e-0f59a62705d6" >
+			<s3:list-buckets doc:name="List buckets" doc:id="71043bb5-c832-4b46-b12d-aaf8b0360481" config-ref="Amazon_S3_Configuration" region="#[vars.region]" />
+			<ee:transform doc:name="Success payload" doc:id="3c7e9ee3-21f5-4827-a54b-3a73c2575301" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ddd2e4c5-8ed2-422d-a7d4-3ac40c103bad" >
+					<ee:transform doc:name="Error Payload" doc:id="d55ddbd2-e6a6-408f-90f0-183058f39cec" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorMessage: error.errorMessage,
+	errorDescription: error.description
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+</mule>

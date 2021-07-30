@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="delete-bucket" doc:id="1bebde82-6394-409e-957c-9cd71568a49e" >
+		<logger level="INFO" doc:name="Logger" doc:id="abadd09a-4ef8-4f20-b74b-c74807eebe77" message="delete object start"/>
+		<ee:transform doc:name="bucketName set as payload" doc:id="1ad49827-3c9b-4306-9eca-78641098f5a0" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="bucketName" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.bucketName]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="dc14329b-c1ea-4a19-998f-e2f83287945d" >
+			<s3:delete-bucket doc:name="Delete bucket" doc:id="40e33be5-3a68-4b95-bff3-f9a8c11239fa" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" />
+			<ee:transform doc:name="final paylod" doc:id="e7b466f6-6739-4b43-b527-fdc9b3b47601">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: 200,
+	Message: vars.bucketName ++ " deleted successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e2ce0785-41fe-4377-8d1a-168cf2af88a5" >
+					<ee:transform doc:name="Error" doc:id="11ba10b1-52db-4b42-a999-392b8d18d486" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorDiscription: error.description,
+	errorMessage: error.errorMessage
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+	<flow name="delete-object" doc:id="9133ef82-eb78-469e-aa07-97691f7fb632" >
+		<ee:transform doc:name="bucketName set as payload" doc:id="98ef0174-909a-44f6-9be5-511744a076ec" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="bucketName" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.bucketName]]></ee:set-variable>
+				<ee:set-variable variableName="keyName" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.objectName]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="6a39bf73-ae90-439e-b127-103ba85b1a6d" >
+			<s3:delete-object doc:name="Delete object" doc:id="b0e1a540-41fd-4cdb-a020-0daa1af72f1f" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[vars.keyName]" />
+			<ee:transform doc:name="final payload" doc:id="5c29a35f-9c54-4cdd-bf04-9d454948cffc">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: 200,
+	message: vars.keyName ++ " Deleted successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="14edc0ed-faf9-4838-8ec5-2fc359b048ab" >
+					<ee:transform doc:name="Error" doc:id="23575092-aed5-4767-b50e-4a03b8b96cca" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorDiscription: error.description,
+	errorMessage: error.errorMessage
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+</mule>
