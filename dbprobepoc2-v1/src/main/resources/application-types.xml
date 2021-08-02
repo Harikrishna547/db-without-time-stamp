@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="payload" format="json">
+      <types:shape format="weave" example="examples/Payload.json"><![CDATA[%dw 2.0
+
+type payload = Array<{|  AccountNumber: Number {"typeId": "int"},   AccountHolderName: String,   AccountType: String,   AccountStatus: String,   ContactNumber: String,   City: String,   Pincode: String|}> {"example": "[{\\\"AccountNumber\\\":1001,\\\"AccountHolderName\\\":\\\"Jayanth\\\",\\\"AccountType\\\":\\\"Saving\\\",\\\"AccountStatus\\\":\\\"Active\\\",\\\"ContactNumber\\\":\\\"00001\\\",\\\"City\\\":\\\"Hyderabd\\\",\\\"Pincode\\\":\\\"500001\\\"},{\\\"AccountNumber\\\":1002,\\\"AccountHolderName\\\":\\\"Kumar\\\",\\\"AccountType\\\":\\\"Saving\\\",\\\"AccountStatus\\\":\\\"Active\\\",\\\"ContactNumber\\\":\\\"00002\\\",\\\"City\\\":\\\"Hyderabd\\\",\\\"Pincode\\\":\\\"500002\\\"},{\\\"AccountNumber\\\":1003,\\\"AccountHolderName\\\":\\\"Yadav\\\",\\\"AccountType\\\":\\\"Saving\\\",\\\"AccountStatus\\\":\\\"Active\\\",\\\"ContactNumber\\\":\\\"00003\\\",\\\"City\\\":\\\"Hyderabd\\\",\\\"Pincode\\\":\\\"500003\\\"},{\\\"AccountNumber\\\":1004,\\\"AccountHolderName\\\":\\\"Khushi\\\",\\\"AccountType\\\":\\\"Saving\\\",\\\"AccountStatus\\\":\\\"Active\\\",\\\"ContactNumber\\\":\\\"00004\\\",\\\"City\\\":\\\"BLR\\\",\\\"Pincode\\\":\\\"500004\\\"},{\\\"AccountNumber\\\":1005,\\\"AccountHolderName\\\":\\\"Priyanka\\\",\\\"AccountType\\\":\\\"Saving\\\",\\\"AccountStatus\\\":\\\"Active\\\",\\\"ContactNumber\\\":\\\"00005\\\",\\\"City\\\":\\\"Hyderabd\\\",\\\"Pincode\\\":\\\"500005\\\"},{\\\"AccountNumber\\\":1006,\\\"AccountHolderName\\\":\\\"Adil\\\",\\\"AccountType\\\":\\\"Current\\\",\\\"AccountStatus\\\":\\\"Inactive\\\",\\\"ContactNumber\\\":\\\"00006\\\",\\\"City\\\":\\\"BLR\\\",\\\"Pincode\\\":\\\"500001\\\"},{\\\"AccountNumber\\\":1007,\\\"AccountHolderName\\\":\\\"Rohan\\\",\\\"AccountType\\\":\\\"Current\\\",\\\"AccountStatus\\\":\\\"Inactive\\\",\\\"ContactNumber\\\":\\\"00007\\\",\\\"City\\\":\\\"BLR\\\",\\\"Pincode\\\":\\\"500007\\\"},{\\\"AccountNumber\\\":1008,\\\"AccountHolderName\\\":\\\"Deepak\\\",\\\"AccountType\\\":\\\"Current\\\",\\\"AccountStatus\\\":\\\"Inactive\\\",\\\"ContactNumber\\\":\\\"00008\\\",\\\"City\\\":\\\"Hyderabd\\\",\\\"Pincode\\\":\\\"500008\\\"},{\\\"AccountNumber\\\":1009,\\\"AccountHolderName\\\":\\\"Karishma\\\",\\\"AccountType\\\":\\\"Current\\\",\\\"AccountStatus\\\":\\\"Inactive\\\",\\\"ContactNumber\\\":\\\"00009\\\",\\\"City\\\":\\\"Hyderabd\\\",\\\"Pincode\\\":\\\"500009\\\"},{\\\"AccountNumber\\\":1010,\\\"AccountHolderName\\\":\\\"Jhon\\\",\\\"AccountType\\\":\\\"Current\\\",\\\"AccountStatus\\\":\\\"Inactive\\\",\\\"ContactNumber\\\":\\\"0010\\\",\\\"City\\\":\\\"BLR\\\",\\\"Pincode\\\":\\\"500010\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#e2996db7-4dd5-4e5b-a565-d04ee5ffdd08"/>
+  <types:enrichment select="#b8480487-d927-45e8-978b-fca8e139bd6d"/>
+  <types:enrichment select="#bd39f775-7d22-4949-ac19-297fecd2c24e"/>
+</types:mule>

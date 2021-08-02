@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="Listener_config" doc:name="HTTP Listener config" doc:id="23d66f89-ecc6-495d-a299-081f951ad8fe" >
+		<http:listener-connection host="${secure::http.host}" port="${secure::http.port}" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="a554d1c9-28c2-46f2-bf2f-cde1ca52d1d3" >
+		<file:connection workingDir="C:\Users\HariKrishan\AnypointStudio\studio-workspace\dbprobepoc2\src\main\resources" />
+	</file:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8596843b-eafc-4202-b582-5705987c5c87" file="properties.yaml" key="mulesoft" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="4a332980-8978-4f83-a40e-cc2f6df6dae7" >
+		<db:my-sql-connection host="${secure::Database.host}" port="${secure::Database.port}" user="${secure::Database.user}" password="${secure::Database.password}" database="customersinfo"/>
+	</db:config>
+</mule>

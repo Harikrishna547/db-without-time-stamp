@@ -1,0 +1,10 @@
+http:
+  host: "0.0.0.0"
+  port: "9500"
+
+Database:
+  host: "![sn0/bkKC48z/NTUjMAQSqg==]"
+  port: "![GsCqbJEvqpI=]"
+  user: "![kGUrMSl4q+g=]"
+  password: "![Xp1WJGEjlxATDQqHn5yNLQ==]"
+  database: "![KspcrPKTB+iEjg23ggXztg==]"

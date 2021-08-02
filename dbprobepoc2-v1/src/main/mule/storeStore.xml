@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="storeStoreFlow" doc:id="dbeed28e-6c6d-4067-a34f-3dcf21c9b6df" >
+		<db:select doc:id="480d7b23-87ed-4670-a7bf-1427905ee681" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM customersinfo.account_info;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="ffef7dcf-ce5d-4adf-b9ad-da2af7ab91e5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<os:store doc:id="56b00bb1-4df9-4b26-ae3f-31f529b84944" key="dbStore"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1cd5c5f7-09fb-4fa6-8ff1-11415f3251c8" message="db data stored in object store"/>
+		<ee:transform doc:name="Transform Message" doc:id="d4513ae4-9cf3-44ee-9524-9c9d3d4081f0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Message: "DB records stored in Object store , please wait few min for finding updated records",
+	ErrorCode : 200
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
